@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "@vocab": "https://github.com/tetratorus/sg-urban-spine/spec/silver#",
+    "ontoplot": "https://www.theworldavatar.com/kg/ontoplot/",
+    "ontozoning": "https://www.theworldavatar.com/kg/ontozoning/",
+    "ontobuiltenv": "https://www.theworldavatar.com/kg/ontobuiltenv/",
+    "opr": "https://www.theworldavatar.com/kg/ontoplanningregulation/",
+    "om": "http://www.ontology-of-units-of-measure.org/resource/om-2/",
+    "bldg": "http://www.opengis.net/citygml/building/2.0/",
+    "Plot": "ontoplot:Plot",
+    "PlanningRegulation": "opr:PlanningRegulation",
+    "Building": "bldg:Building",
+    "height_m": {"@id": "bldg:measuredHeight", "@type": "http://www.w3.org/2001/XMLSchema#double"},
+    "gfa_m2": {"@id": "ontobuiltenv:hasGFA", "@type": "http://www.w3.org/2001/XMLSchema#float"},
+    "is_corner_plot": {"@id": "ontoplot:isCornerPlot", "@type": "http://www.w3.org/2001/XMLSchema#boolean"},
+    "awaiting_gpr_evaluation": {"@id": "opr:isAwaitingDetailedGPREvaluation", "@type": "http://www.w3.org/2001/XMLSchema#boolean"}
+  },
+  "_note": "Only columns whose TWA term is a literal-valued property are mapped here. area_m2, zone_type, gross_plot_ratio, max_height_m, site_coverage, setback_m, storeys, use_type and year_built are object-property paths through om:Measure / class-valued nodes in TWA; their paths live in silver_twa_mapping.yaml (validated by check_context.py). Hub ids (plot_id, building_id) become IRIs via Silver id_bridge (source=twa_kg), not via a global '@id' alias."
+}
