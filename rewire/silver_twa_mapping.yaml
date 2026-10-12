@@ -1,0 +1,52 @@
+# sg-urban-spine Silver columns -> The World Avatar ontology terms (validated by check_context.py against the OWL files here).
+# path: SPARQL property path from the row's subject to the literal value. value_class: class of the intermediate node.
+# Most TWA quantities are om:Measure nodes (OM-2 units), not literals, so a flat JSON-LD term cannot carry them.
+prefixes:
+  ontoplot: https://www.theworldavatar.com/kg/ontoplot/
+  ontozoning: https://www.theworldavatar.com/kg/ontozoning/
+  opr: https://www.theworldavatar.com/kg/ontoplanningregulation/
+  ontobuiltenv: https://www.theworldavatar.com/kg/ontobuiltenv/
+  om: http://www.ontology-of-units-of-measure.org/resource/om-2/
+  bldg: http://www.opengis.net/citygml/building/2.0/
+  time: http://www.w3.org/2006/time#
+  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
+# Namespaces defined outside this repo; terms there are accepted without an OWL check.
+external: [om, bldg, time, rdf]
+tables:
+  plots:
+    class: ontoplot:Plot
+    columns:
+      area_m2: {path: [ontoplot:hasPlotArea, om:hasValue, om:hasNumericalValue], value_class: om:Area, unit: om:squareMetre}
+  zoning:
+    class: ontoplot:Plot   # OntoZoning assigns land-use type to the Plot, not to a Zone (OntoZoning README, 'LandUseType')
+    columns:
+      zone_type: {path: [ontozoning:hasLandUseType, rdf:type], value_class: ontozoning:LandUseType,
+                  note: "value is a LandUseType subclass, e.g. RESIDENTIAL -> ontozoning:Residential; label kept in rdfs:label"}
+      gross_plot_ratio: {path: ["^opr:appliesTo", opr:allowsGrossPlotRatio, om:hasValue, om:hasNumericalValue],
+                         value_class: opr:GrossPlotRatio, note: "null GPR -> opr:isAwaitingDetailedGPREvaluation true"}
+  regulations:
+    class: opr:PlanningRegulation
+    subject: "regulation node; plot reached via opr:appliesTo"
+    columns:
+      max_height_m: {path: [opr:allowsBuildingHeight, om:hasValue, om:hasNumericalValue], value_class: opr:BuildingHeight,
+                     unit: om:metre, note: "BuildingHeight opr:isRelativeTo opr:Datum"}
+      site_coverage: {path: [opr:allowsSiteCoverage, om:hasValue, om:hasNumericalValue], value_class: opr:SiteCoverage}
+      setback_m: {path: [opr:requiresSetback, om:hasValue, om:hasNumericalValue], value_class: opr:Setback, unit: om:metre}
+      max_storeys: {path: null, note: "GAP: OntoPlanningRegulation has no storey-limit term; keep in spine vocab"}
+  buildings:
+    class: bldg:Building   # what TWA KG buildings are typed as (CEAAgent / GFAAgent queries); OntoBuiltEnv has no Building class
+    columns:
+      height_m: {path: [bldg:measuredHeight], note: "CityGML 2.0 term used by CEAAgent; OntoBuiltEnv has no height term"}
+      storeys: {path: [ontobuiltenv:hasNumberOfFloors, ontobuiltenv:hasValue], value_class: ontobuiltenv:NumberOfFloors}
+      use_type: {path: [ontobuiltenv:hasPropertyUsage, rdf:type], value_class: ontobuiltenv:PropertyUsage,
+                  note: "value is a PropertyUsage subclass (Office, Hotel, ...); pick max ontobuiltenv:hasUsageShare"}
+      year_built: {path: [ontobuiltenv:hasConstructionDate, time:hasBeginning, time:inXSDDateTimeStamp]}
+  districts:
+    class: null   # spine districts are morphology districts; ontobuiltenv:AdministrativeDistrict is an admin area (not equivalent)
+    columns: {}
+# Gold columns with a TWA home (used by TheWorldAvatar rewire/ adapters).
+gold:
+  gfa.allowable:
+    allowable_gfa_m2: {path: [ontoplot:hasMaximumPermittedGFA, om:hasValue, om:hasNumericalValue], value_class: om:Area}
+  building_gfa:
+    gfa_m2: {path: [ontobuiltenv:hasGFA], note: "datatype property, float literal (GFAAgent output)"}
