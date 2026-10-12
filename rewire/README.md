@@ -1,6 +1,6 @@
 # rewire/ — sg-urban-spine Silver ↔ TWA ontology mapping
 
-[sg-urban-spine](https://github.com/tetratorus/sg-urban-spine) keeps a canonical Singapore city model ("Silver") as GeoParquet tables
+[sg-urban-spine](https://github.com/tetratorus/saas-middleware/tree/sg-urban-spine) keeps a canonical Singapore city model ("Silver") as GeoParquet tables
 and publishes a JSON-LD context (`spec/silver/context.jsonld`) so Silver rows can be lifted into The World Avatar (TWA) knowledge graph.
 This folder checks that mapping against the real OWL files in this repo (OntoPlot, OntoZoning, OntoPlanningRegulation, OntoBuiltEnv,
 all `owl:versionInfo 1`) and holds the corrected version. **No ontology file is changed**, so no version bump is needed.
